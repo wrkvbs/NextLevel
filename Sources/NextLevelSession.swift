@@ -112,6 +112,12 @@ public class NextLevelSession {
             self._writer != nil
         }
     }
+    
+    public var writerError: Error? {
+        get {
+            self._writerError
+        }
+    }
 
     /// True if the current clip recording has been started.
     public var currentClipHasStarted: Bool {
@@ -175,6 +181,7 @@ public class NextLevelSession {
     internal var _clipFilenameCount: Int = 0
 
     internal var _writer: AVAssetWriter?
+    internal var _writerError: Error?
     internal var _videoInput: AVAssetWriterInput?
     internal var _audioInput: AVAssetWriterInput?
     internal var _pixelBufferAdapter: AVAssetWriterInputPixelBufferAdaptor?
@@ -339,6 +346,7 @@ extension NextLevelSession {
                 } else {
                     print("NextLevel, writer encountered an error \(String(describing: writer.error))")
                     self._writer = nil
+                    self._writerError = writer.error
                 }
             }
         } catch {
