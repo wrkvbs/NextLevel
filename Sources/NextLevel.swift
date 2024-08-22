@@ -2477,7 +2477,7 @@ extension NextLevel {
     /// Pauses video recording, preparing 'NextLevel' to start a new clip with 'record()' with completion handler.
     ///
     /// - Parameter completionHandler: Completion handler for when pause completes
-    public func pause(withCompletionHandler completionHandler: (() -> Void)? = nil) {
+    public func pause(withCompletionHandler completionHandler: ((Error?) -> Void)? = nil) {
         self._recording = false
 
         self.executeClosureAsyncOnSessionQueueIfNecessary {
@@ -2489,21 +2489,33 @@ extension NextLevel {
                                 self.videoDelegate?.nextLevel(self, didCompleteClip: sessionClip, inSession: session)
                             }
                             if let completionHandler = completionHandler {
-                                DispatchQueue.main.async(execute: completionHandler)
+                                DispatchQueue.main.async {
+                                    completionHandler(nil)
+                                }
                             }
-                        } else if let _ = error {
-                            // TODO, report error
+                        } else if let error = error {
                             if let completionHandler = completionHandler {
-                                DispatchQueue.main.async(execute: completionHandler)
+                                DispatchQueue.main.async {
+                                    completionHandler(error)
+                                }
                             }
                         }
                     })
                 } else if let completionHandler = completionHandler {
-                    DispatchQueue.main.async(execute: completionHandler)
+                    DispatchQueue.main.async {
+                        completionHandler(nil)
+                    }
                 }
             } else if let completionHandler = completionHandler {
-                DispatchQueue.main.async(execute: completionHandler)
+                completionHandler(nil)
             }
+        }
+    }
+    
+    /// Pause variant with completion handler that takes no arguments for compatibility
+    public func pause(withCompletionHandler completionHandler: @escaping (() -> Void)) {
+        pause { _ in
+            completionHandler()
         }
     }
 
