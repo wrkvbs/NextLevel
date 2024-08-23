@@ -318,6 +318,7 @@ extension NextLevelSession {
         }
 
         do {
+            self._writerError = nil
             self._writer = try AVAssetWriter(url: url, fileType: self.fileType)
             if let writer = self._writer {
                 writer.shouldOptimizeForNetworkUse = true
